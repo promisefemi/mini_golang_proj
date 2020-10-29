@@ -1,3 +1,6 @@
 behance_image_scrapper/*.jpg
 behance_image_scrapper/assets
 behance_image_scrapper/*.png
+
+nasa_apod/*.jpg
+nasa_apod/*.png

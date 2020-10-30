@@ -7,14 +7,16 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"path"
-	"sync"
 	"os"
+	"path"
+	"strconv"
+	"strings"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func fetchImage(pageUrl string) {
+func fetchImage(pageUrl string, imageNumber string) {
 
 	resp, err := http.Get(pageUrl)
 	if err != nil {
@@ -38,24 +40,40 @@ func fetchImage(pageUrl string) {
 
 	// Find HTML Nodes using these selectors (Hopefully they don't change)
 	doc.Find("#project-modules .project-module-image-inner-wrap img").Each(func(i int, s *goquery.Selection) {
-		imgUrl, isThere := s.Attr("src")
-		if isThere {
-			urlPath, _ := url.Parse(imgUrl)
 
-			fileName := path.Base(urlPath.Path)
+		if imageNumber == "all" {
+			wg.Add(1)
 
-			if fileName != "blank.png" {
-				wg.Add(1)
-				fmt.Printf("Downloading: %s\n", fileName)
-				go downloadImage(fileName, imgUrl, &wg)
-			}
+			go processDownload(s, &wg)
 		} else {
-			fmt.Println("Could Not find any SRC")
-		}
+			for _, number := range strings.Split(imageNumber, ",") {
+				if integer, _ := strconv.Atoi(number); integer == i+1 {
+					wg.Add(1)
 
+					go processDownload(s, &wg)
+				}
+			}
+
+		}
 	})
 	wg.Wait()
 	fmt.Println("Images Downloaded Successfully")
+
+}
+
+func processDownload(s *goquery.Selection, wg *sync.WaitGroup) {
+	imgUrl, isThere := s.Attr("src")
+	if isThere {
+		urlPath, _ := url.Parse(imgUrl)
+
+		fileName := path.Base(urlPath.Path)
+		if fileName != "blank.png" {
+			fmt.Printf("Downloading: %s\n\n", fileName)
+			go downloadImage(fileName, imgUrl, wg)
+		}
+	} else {
+		fmt.Println("Could Not find any SRC")
+	}
 
 }
 
@@ -75,14 +93,14 @@ func downloadImage(fileName string, imageURL string, wg *sync.WaitGroup) {
 		fmt.Printf("%s \n*******------******* \n", err)
 
 	}
-	
-	if _, err = os.Stat("assets/"); os.IsNotExist(err){
-		err = os.Mkdir("assets",0755)
-		if err != nil{
+
+	if _, err = os.Stat("assets/"); os.IsNotExist(err) {
+		err = os.Mkdir("assets", 0755)
+		if err != nil {
 			log.Fatal(err)
-		 }
+		}
 	}
-	
+
 	err = ioutil.WriteFile("assets/"+fileName, responseBody, 0777)
 	if err != nil {
 		fmt.Printf("%s \n*******------******* \n", err)
@@ -94,11 +112,12 @@ func downloadImage(fileName string, imageURL string, wg *sync.WaitGroup) {
 
 func main() {
 	url := flag.String("url", "", "The Url of the Project")
+	imageNumber := flag.String("imagenumber", "all", "Download only selected images (images are counted from 1): Default is 'All'")
 	flag.Parse()
 
 	if *url == "" {
 		log.Fatal("URL flag is a required field")
 	}
 
-	fetchImage(*url)
+	fetchImage(*url, *imageNumber)
 }

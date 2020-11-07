@@ -1,0 +1,72 @@
+[
+{
+        "id": 2332453,
+        "name": "Lagos State",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 3.75,
+            "lat": 6.58333
+        }
+    },
+    {
+        "id": 2332459,
+        "name": "Lagos",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 3.39583,
+            "lat": 6.45306
+        }
+    },
+    {
+        "id": 2332504,
+        "name": "Lafiagi",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 5.41667,
+            "lat": 8.86667
+        }
+    },
+    {
+        "id": 2332515,
+        "name": "Lafia",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 8.51667,
+            "lat": 8.48333
+        }
+    },
+    {
+        "id": 2332662,
+        "name": "Kwolla",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 9.28333,
+            "lat": 8.93333
+        }
+    },
+    {
+        "id": 2332733,
+        "name": "Kwatarkwashi",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 6.82196,
+            "lat": 12.14082
+        }
+    },
+    {
+        "id": 2332785,
+        "name": "Kwara State",
+        "state": "",
+        "country": "NG",
+        "coord": {
+            "lon": 5.0,
+            "lat": 8.5
+        }
+    }
+]

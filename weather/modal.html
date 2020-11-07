@@ -1,0 +1,12 @@
+{{ define "modal"}}
+
+<div class="modalBackdrop"></div>
+<div class="modal">
+  <input type="text" placeholder="Search Cities" id="citySearch" />
+  <textarea  id="citieslist" cols="30" rows="10">
+    {{toString .}}
+  </textarea>
+  <div class="results"></div>
+</div>
+
+{{end}}

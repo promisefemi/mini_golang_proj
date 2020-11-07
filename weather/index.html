@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="fullBody">
+    <div class="currentCity">
+      <button type="button" id="changeCityButton">Change City</button>
+      <p>{{.CurrentCity.Name}}, {{.CurrentCity.Country}}</p>
+    </div>
+    
+    
+    {{template "modal" .Cities}}
+    
+    
+      <div class="mainWeather tempCard">
+        <div class="temp">
+          <div class="tempName">
+            <h4>{{.Current.ApproxTemp}}<span>&#x2103;</span></h4>
+            <p>{{ (index .Current.Weather 0).Description}}</p>
+          </div>
+          <div class="tempIcon">
+            <img
+              src="http://openweathermap.org/img/wn/{{ (index .Current.Weather 0).Icon}}@4x.png"
+              alt="{{ (index .Current.Weather 0).Main}}"
+            />
+          </div>
+        </div>
+
+        <div class="tempCity">
+          <h4>{{ .CurrentCity.Name}}, {{ .CurrentCity.Country}}</h4>
+          <p>{{.Current.Date}}</p>
+        </div>
+      </div>
+
+      <div class="dailyWeather">
+        {{ range $index, $day := .Daily }} {{ if ne $index 0}}
+        <div class="tempDay tempCard">
+          <p>{{.Date}}</p>
+          <h4>{{.ApproxTemp}}<span>&#x2103;</span></h4>
+          <p>{{ (index .Weather 0).Description}}</p>
+        </div>
+
+        {{end}} {{end}}
+      </div>
+    </div>
+    <script src="/assets/script.js"></script>
+  </body>
+</html>

@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-var api_key string = ""
+var api_key string = "LlmSFJ90CTQG1coaWaJ3kJmBJOMOQ5UpTQghH06e"
 var nasaUrl string = "https://api.nasa.gov/planetary/apod"
 var HD *bool
 var dataCallChan = make(chan []byte, 10)

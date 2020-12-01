@@ -11,7 +11,7 @@ import (
 	"text/template"
 )
 
-var appid = "5683e0711a72b0545334b5ed2f9887d7"
+var appid = "" //Replace the api key
 var baseURL = "http://api.openweathermap.org/data/2.5/onecall"
 var tpl = template.New("index.html")
 var currentCity = City{}

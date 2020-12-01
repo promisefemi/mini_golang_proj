@@ -1,0 +1,25 @@
+type Post {
+  uuid: String!
+  title: String!
+  content: String!
+  author_id: String!
+  author: Author!
+}
+
+
+
+input PostInput {
+  title: String!
+  content: String!
+  author_id: String!
+}
+
+extend type Query {
+  getMany(limit: Int!, page: Int!): [Post!]!
+  getPost(uuid: String!): Post!
+}
+extend type Mutation {
+  createPost(input: PostInput): Post!
+  updatePost(input: PostInput, uuid: String!): Post!
+  deletePost(uuid: String!): Boolean!
+}

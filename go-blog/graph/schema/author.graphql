@@ -1,0 +1,23 @@
+type Author {
+  name: String!
+  email: String!
+  id: ID!
+  username: String!
+}
+
+input AuthorInput {
+  name: String!
+  email: String!
+  username: String!
+  password: String!
+}
+
+type Query {
+  checkUsername(username: String!): Boolean!
+  checkEmail(email: String!): Boolean!
+}
+
+type Mutation {
+  signup(input: AuthorInput!): Boolean
+  login(email: String!, password: String!): String!
+}

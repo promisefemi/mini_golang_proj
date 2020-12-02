@@ -2,11 +2,17 @@
 
 package model
 
+type AuthPayload struct {
+	Token  string  `json:"token"`
+	Author *Author `json:"author"`
+}
+
 type Author struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	ID       string `json:"id"`
 	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type AuthorInput struct {

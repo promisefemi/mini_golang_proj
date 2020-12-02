@@ -3,6 +3,7 @@ type Author {
   email: String!
   id: ID!
   username: String!
+  password: String!
 }
 
 input AuthorInput {
@@ -17,7 +18,12 @@ type Query {
   checkEmail(email: String!): Boolean!
 }
 
+type AuthPayload{
+  token: String!
+  author: Author!
+}
+
 type Mutation {
   signup(input: AuthorInput!): Boolean
-  login(email: String!, password: String!): String!
+  login(email: String!, password: String!): AuthPayload!
 }

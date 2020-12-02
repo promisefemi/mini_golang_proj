@@ -13,12 +13,13 @@ mutation logAuthorIn($email: String!, $password: String!) {
   login(email: $email, password: $password)
 }
 
-mutation postBlog($input: PostInput!) {
-  createPost(input: $input) {
-    uuid
+query getPosts{
+  getMany(limit: 20, page: 2){
     title
     content
-    author {
+    author{
+      email
+      username
       name
     }
   }
@@ -36,6 +37,24 @@ query getPost {
   }
 }
 
+/*
+This mutations require an Authorization: header for authentication
+
+Authorization: Bearer {token}
+token will be returned when you log in and it expires in 5 mins
+*/
+
+mutation postBlog($input: PostInput!) {
+  createPost(input: $input) {
+    uuid
+    title
+    content
+    author {
+      name
+    }
+  }
+}
+
 mutation updateBlog($update: PostInput!) {
   updatePost(uuid: "4162756e-6368-6e75-6d62-657273000000", input: $update) {
     uuid
@@ -48,16 +67,5 @@ mutation updateBlog($update: PostInput!) {
   }
 }
 
-query getPosts{
-  getMany(limit: 20, page: 2){
-    title
-    content
-    author{
-      email
-      username
-      name
-    }
-  }
-}
 
 ```

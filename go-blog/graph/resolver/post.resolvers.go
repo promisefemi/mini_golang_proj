@@ -4,6 +4,7 @@ package resolver
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"blog/graph/auth"
 	"blog/graph/model"
 	"context"
 	"errors"
@@ -11,13 +12,11 @@ import (
 
 func (r *mutationResolver) CreatePost(ctx context.Context, input *model.PostInput) (*model.Post, error) {
 	// Validate author
-	author := &model.Author{}
-
-	r.DB.Table("authors").Where("id = ?", input.AuthorID).First(author)
-
-	if author.Email == "" {
-		return nil, errors.New("Invalid Author")
+	author := auth.ForContext(ctx)
+	if author == nil || author.Email == "" {
+		return &model.Post{}, errors.New("Access Denied")
 	}
+
 	post := &model.Post{
 		Title:    input.Title,
 		Content:  input.Content,
@@ -36,6 +35,10 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input *model.PostInpu
 }
 
 func (r *mutationResolver) UpdatePost(ctx context.Context, input *model.PostInput, uuid string) (*model.Post, error) {
+	if author := auth.ForContext(ctx); author == nil || author.Email == "" {
+		return &model.Post{}, errors.New("Access Denied")
+	}
+
 	post := &model.Post{
 		UUID:     "",
 		AuthorID: "",
@@ -57,6 +60,9 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, input *model.PostInpu
 }
 
 func (r *mutationResolver) DeletePost(ctx context.Context, uuid string) (bool, error) {
+	if author := auth.ForContext(ctx); author == nil || author.Email == "" {
+		return false, errors.New("Access Denied")
+	}
 	err := r.DB.Where("uuid = ?", uuid).Delete(&model.Post{}).Error
 
 	if err != nil {

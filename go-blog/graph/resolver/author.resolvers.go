@@ -4,9 +4,11 @@ package resolver
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"blog/graph/auth"
 	"blog/graph/generated"
 	"blog/graph/model"
 	"context"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,22 +36,29 @@ func (r *mutationResolver) Signup(ctx context.Context, input model.AuthorInput) 
 	return &status, err
 }
 
-func (r *mutationResolver) Login(ctx context.Context, email string, password string) (string, error) {
-	author := &model.AuthorInput{}
+func (r *mutationResolver) Login(ctx context.Context, email string, password string) (*model.AuthPayload, error) {
+	author := &model.Author{}
 
 	r.DB.Table("authors").Where("email = ?", email).First(author)
 
 	if author.Email != "" {
 		err := bcrypt.CompareHashAndPassword([]byte(author.Password), []byte(password))
 		if err != nil {
-			return "false", nil
+			return &model.AuthPayload{}, err
 		}
 
-		return "Login successfull", nil
+		payload, err := auth.GenerateJWT(author)
+
+		if err != nil {
+			fmt.Println(err)
+			return &model.AuthPayload{}, err
+		}
+
+		return &payload, nil
 
 	}
 	// err := bcrypt.CompareHashAndPassword()
-	return "Not Found", nil
+	return &model.AuthPayload{}, nil
 }
 
 func (r *queryResolver) CheckUsername(ctx context.Context, username string) (bool, error) {

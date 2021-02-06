@@ -11,6 +11,9 @@ import (
 	"path"
 	"strconv"
 	"strings"
+
+	//"strconv"
+	//"strings"
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
@@ -38,9 +41,18 @@ func fetchImage(pageUrl string, imageNumber string) {
 
 	var wg sync.WaitGroup
 
+	// project-module grid--main js-grid-main project-module-image-full image-full grid--ready
 	// Find HTML Nodes using these selectors (Hopefully they don't change)
-	doc.Find("#project-modules .project-module-image-inner-wrap img").Each(func(i int, s *goquery.Selection) {
+	downloadCount := 0
+	fmt.Printf("Length: %s \n ", doc.Find("#project-modules img").Length())
+	fmt.Println()
+	projectModules := doc.Find("#project-modules img")
 
+	fmt.Println(projectModules.Length())
+
+	projectModules.Each(func(i int, s *goquery.Selection) {
+
+		downloadCount += 1
 		if imageNumber == "all" {
 			wg.Add(1)
 
@@ -57,28 +69,43 @@ func fetchImage(pageUrl string, imageNumber string) {
 		}
 	})
 	wg.Wait()
-	fmt.Println("Images Downloaded Successfully")
 
+	if downloadCount > 0 {
+		fmt.Println("Images Downloaded Successfully")
+	} else {
+		fmt.Println("No Image was Downloaded")
+	}
 }
 
 func processDownload(s *goquery.Selection, wg *sync.WaitGroup) {
-	imgUrl, isThere := s.Attr("src")
-	if isThere {
-		urlPath, _ := url.Parse(imgUrl)
+	imgURL, isThere := s.Attr("data-src")
 
-		fileName := path.Base(urlPath.Path)
+	if !isThere {
+		imgURL, isThere = s.Attr("src")
+	}
+	//fmt.Println(imgURL)
+
+	if isThere {
+		fileName := getFileName(imgURL)
+		// fmt.Printf("URL PATH = %s , File Name = %s  \n", urlPath, fileName)
 		if fileName != "blank.png" {
 			fmt.Printf("Downloading: %s\n\n", fileName)
-			go downloadImage(fileName, imgUrl, wg)
+			go downloadImage(fileName, imgURL, wg)
 		}
 	} else {
 		fmt.Println("Could Not find any SRC")
 	}
+}
 
+func getFileName(imgURL string) string {
+	urlPath, _ := url.Parse(imgURL)
+	fileName := path.Base(urlPath.Path)
+	return fileName
 }
 
 func downloadImage(fileName string, imageURL string, wg *sync.WaitGroup) {
 
+	// fmt.Printf("URL of the Image %s \n", imageURL)
 	resp, err := http.Get(imageURL)
 	if err != nil {
 		fmt.Println(err)
@@ -106,8 +133,9 @@ func downloadImage(fileName string, imageURL string, wg *sync.WaitGroup) {
 		fmt.Printf("%s \n*******------******* \n", err)
 	}
 
-	wg.Done()
+	fmt.Printf("%s Downloaded \n\n", fileName)
 
+	wg.Done()
 }
 
 func main() {

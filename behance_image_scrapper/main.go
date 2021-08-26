@@ -19,6 +19,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+var title string
+
 func fetchImage(pageUrl string, imageNumber string) {
 
 	resp, err := http.Get(pageUrl)
@@ -44,28 +46,24 @@ func fetchImage(pageUrl string, imageNumber string) {
 	// project-module grid--main js-grid-main project-module-image-full image-full grid--ready
 	// Find HTML Nodes using these selectors (Hopefully they don't change)
 	downloadCount := 0
-	fmt.Printf("Length: %s \n ", doc.Find("#project-modules img").Length())
-	fmt.Println()
+
+	pageTitle := doc.Find("title")
+
+	title = pageTitle.Text()
+
 	projectModules := doc.Find("#project-modules img")
-
-	fmt.Println(projectModules.Length())
-
 	projectModules.Each(func(i int, s *goquery.Selection) {
-
 		downloadCount += 1
 		if imageNumber == "all" {
 			wg.Add(1)
-
 			go processDownload(s, &wg)
 		} else {
 			for _, number := range strings.Split(imageNumber, ",") {
 				if integer, _ := strconv.Atoi(number); integer == i+1 {
 					wg.Add(1)
-
 					go processDownload(s, &wg)
 				}
 			}
-
 		}
 	})
 	wg.Wait()
@@ -121,14 +119,14 @@ func downloadImage(fileName string, imageURL string, wg *sync.WaitGroup) {
 
 	}
 
-	if _, err = os.Stat("assets/"); os.IsNotExist(err) {
-		err = os.Mkdir("assets", 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
+	if _, err = os.Stat("assets/" + title + "/"); os.IsNotExist(err) {
+		_ = os.Mkdir("assets/"+title, 0755)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 	}
 
-	err = ioutil.WriteFile("assets/"+fileName, responseBody, 0777)
+	err = ioutil.WriteFile("assets/"+title+"/"+fileName, responseBody, 0777)
 	if err != nil {
 		fmt.Printf("%s \n*******------******* \n", err)
 	}

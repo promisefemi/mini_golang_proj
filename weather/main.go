@@ -82,7 +82,7 @@ func main() {
 	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	mux.HandleFunc("/", indexHandler)
 	fmt.Println(" ----- Ready ----- ")
-
+fmt.Println("Server is ready at localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 
 }
